@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Hero } from '../../interfaces/hero.interface';
 import { HeroesService } from '../../services/heroes.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Router } from '@angular/router';
+import { Observable, map, startWith, switchMap, take, tap, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-search-page',
@@ -11,7 +12,7 @@ import { Router } from '@angular/router';
   styles: [
   ]
 })
-export class SearchPageComponent {
+export class SearchPageComponent implements OnInit, OnDestroy {
 
   public searchInput = new FormControl('')
 
@@ -19,31 +20,68 @@ export class SearchPageComponent {
 
   public selectedHero?: Hero;
 
-  constructor( private heroesService: HeroesService,
-              private router: Router ) {
+  private suggestionSubscription?: Subscription
 
+  // heroesFiltrados!: Observable<Hero[]>;
+
+
+  constructor(
+    private heroesService: HeroesService,
+    private router: Router) {
   }
 
-  searchHero() {
-    const value: string = this.searchInput.value || '';
 
-    this.heroesService.getSuggestions(value)
-      .subscribe(heroes => this.heroes = heroes);
 
+
+  ngOnInit() {
+    this.suggestionSubscription = this.searchInput.valueChanges.pipe(
+      switchMap( (value:any) => this.heroesService.getSuggestions( value) )
+    ).subscribe((heroes: Hero[]) => {
+      if (this.searchInput.value === ''){
+        this.heroes = [];
+        return;
+      }
+      this.heroes = heroes
+    })
   }
-  onSelectedOption(event: MatAutocompleteSelectedEvent): void {
-    if (!event.option.value) {
+
+  // ngOnInit(): void {
+  //   this.searchInput.valueChanges.pipe(
+  //     map(value => this.getSuggestion(value || '')),
+  //   ).subscribe()
+  // }
+
+  // private getSuggestion(value:string) {
+  //   this.heroesService.getSuggestions(value)
+  //     .subscribe(heroes => this.heroes = heroes)
+  // }
+
+  onSelectedOption( event: MatAutocompleteSelectedEvent ): void {
+    if ( !event.option.value ) {
       this.selectedHero = undefined;
       return;
     }
 
-    const hero: Hero = event.option.value
-    this.searchInput.setValue (hero.superhero);
+    const hero: Hero = event.option.value;
+    this.searchInput.setValue( hero.superhero );
 
     this.selectedHero = hero;
-
-    // this.router.navigateByUrl(`/heroes/${hero.id}`)
     this.router.navigate(['heroes', hero.id])
   }
+
+
+
+
+  // searchHero() {
+  //   const value: string = this.searchInput.value || '';
+
+  //   this.heroesService.getSuggestions( value )
+  //     .subscribe( heroes => this.heroes = heroes );
+  // }
+
+  ngOnDestroy(): void {
+    this.suggestionSubscription?.unsubscribe();
+  }
+
 
 }
