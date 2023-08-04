@@ -4,7 +4,7 @@ import { Hero } from '../../interfaces/hero.interface';
 import { HeroesService } from '../../services/heroes.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Router } from '@angular/router';
-import { Observable, map, startWith, switchMap, take, tap, Subscription } from 'rxjs';
+import { Observable, map, startWith, switchMap, take, tap, Subscription, of } from 'rxjs';
 
 @Component({
   selector: 'app-search-page',
@@ -22,7 +22,6 @@ export class SearchPageComponent implements OnInit, OnDestroy {
 
   private suggestionSubscription?: Subscription
 
-  // heroesFiltrados!: Observable<Hero[]>;
 
 
   constructor(
@@ -35,14 +34,15 @@ export class SearchPageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.suggestionSubscription = this.searchInput.valueChanges.pipe(
-      switchMap( (value:any) => this.heroesService.getSuggestions( value) )
-    ).subscribe((heroes: Hero[]) => {
-      if (this.searchInput.value === ''){
-        this.heroes = [];
-        return;
-      }
-      this.heroes = heroes
-    })
+      switchMap( ( value: string | null ) => this.heroesService.getSuggestions( value) ),
+      map((heroes: Hero[]) => {
+        if (this.searchInput.value === ''){
+          this.heroes = [];
+          return;
+        }
+        this.heroes = heroes
+      })
+    ).subscribe()
   }
 
   // ngOnInit(): void {
