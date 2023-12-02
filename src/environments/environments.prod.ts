@@ -1,3 +1,3 @@
 export const environments = {
-  baseUrl: 'https://ejemplo.com/api'
+  baseUrl: 'https://my-json-server.typicode.com/julius86jjb/Angular2023FH-06-HeroesApp'
 }
