@@ -13,8 +13,8 @@ const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then (m => m.AuthModule),
-    canActivate: [ publicGuardActivate ],
-    canMatch: [publicGuardMatch]
+    // canActivate: [ publicGuardActivate ],
+    // canMatch: [publicGuardMatch]
   },
   {
     path: 'heroes',
@@ -23,7 +23,7 @@ const routes: Routes = [
     canMatch: [authGuardMatch]
   },
   {path: '404', component: Error404PageComponent},
-  {path: '', redirectTo: 'heroes', pathMatch: 'full'},
+  {path: '', redirectTo: 'auth', pathMatch: 'full'},
   {path: '**', redirectTo: '404'}
 ];
 

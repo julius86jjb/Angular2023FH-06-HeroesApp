@@ -10,7 +10,7 @@ const checkAuthStatus = (): Observable<boolean> => {
 
   return authService.checkAuthentication().pipe(
     tap((isAuth) => {
-      console.log({isAuth});
+      // console.log({isAuth});
       if (isAuth) router.navigate(['./']);
     }),
     map( (isAuth) => !isAuth)
