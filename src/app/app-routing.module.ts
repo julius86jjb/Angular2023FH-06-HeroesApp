@@ -10,20 +10,20 @@ import { publicGuardActivate, publicGuardMatch } from './auth/guards/public-func
 
 
 const routes: Routes = [
-  {
-    path: 'auth',
-    loadChildren: () => import('./auth/auth.module').then (m => m.AuthModule),
-    // canActivate: [ publicGuardActivate ],
-    // canMatch: [publicGuardMatch]
-  },
+  // {
+  //   path: 'auth',
+  //   loadChildren: () => import('./auth/auth.module').then (m => m.AuthModule),
+  //   // canActivate: [ publicGuardActivate ],
+  //   // canMatch: [publicGuardMatch]
+  // },
   {
     path: 'heroes',
     loadChildren: () => import('./heroes/heroes.module').then (m => m.HeroesModule),
-    canActivate: [ authGuardActivated ],
-    canMatch: [authGuardMatch]
+    // canActivate: [ authGuardActivated ],
+    // canMatch: [authGuardMatch]
   },
   {path: '404', component: Error404PageComponent},
-  {path: '', redirectTo: 'auth', pathMatch: 'full'},
+  {path: '', redirectTo: 'heroes', pathMatch: 'full'},
   {path: '**', redirectTo: '404'}
 ];
 
